@@ -1,0 +1,1308 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="برنامج محاسبة بطاقات التعبئة في المغرب - تطوير محمد القادري">
+    <meta name="theme-color" content="#1a73e8">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="محاسبة تعبئة">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon-192.png">
+    <title>برنامج محاسبة بطاقات التعبئة - المغرب</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            direction: rtl;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* ===== Header ===== */
+        .header {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* ===== Navigation Tabs ===== */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-tab {
+            flex: 1;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            border: none;
+            background: white;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+            min-width: 100px;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .nav-tab:hover {
+            background-color: #f5f5f5;
+        }
+
+        .nav-tab.active {
+            color: #1a73e8;
+            border-bottom-color: #1a73e8;
+        }
+
+        .nav-tab .tab-icon {
+            display: block;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        /* ===== Content Sections ===== */
+        .content-section {
+            display: none;
+            padding: 20px;
+            max-width: 800px;
+            margin: 0 auto;
+            flex: 1;
+            width: 100%;
+        }
+
+        .content-section.active {
+            display: block;
+        }
+
+        /* ===== Dashboard Cards ===== */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        @media (min-width: 768px) {
+            .dashboard-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        .dash-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .dash-card.highlight {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+        }
+
+        .dash-card h3 {
+            font-size: 12px;
+            margin-bottom: 10px;
+            opacity: 0.9;
+        }
+
+        .dash-card .value {
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .dash-card .unit {
+            font-size: 12px;
+            opacity: 0.8;
+        }
+
+        /* ===== Forms ===== */
+        .form-card {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-card h2 {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #1a73e8;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #555;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 14px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            -webkit-appearance: none;
+        }
+
+        .form-control:focus {
+            outline: none;
+            border-color: #1a73e8;
+        }
+
+        /* ===== Operator Selection ===== */
+        .operator-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .operator-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .operator-btn:hover {
+            border-color: #999;
+        }
+
+        .operator-btn.selected {
+            border-color: #1a73e8;
+            background-color: #e3f2fd;
+        }
+
+        .operator-btn .op-name {
+            font-weight: bold;
+            display: block;
+            margin-top: 5px;
+        }
+
+        .op-maroc-telecom { color: #e91e63; }
+        .op-inwi { color: #4CAF50; }
+        .op-orange { color: #ff6600; }
+        .op-meditel { color: #9c27b0; }
+
+        /* ===== Denomination Grid ===== */
+        .denom-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .denom-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .denom-btn:hover {
+            border-color: #1a73e8;
+        }
+
+        .denom-btn.selected {
+            border-color: #1a73e8;
+            background-color: #1a73e8;
+            color: white;
+        }
+
+        /* ===== Buttons ===== */
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #1a73e8, #0d47a1);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #1565c0, #0a3a8a);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+        }
+
+        .btn-danger {
+            background: #f44336;
+            color: white;
+            padding: 8px 15px;
+            width: auto;
+            font-size: 12px;
+        }
+
+        /* ===== Sales List ===== */
+        .sales-list {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .sales-header {
+            background: #1a73e8;
+            color: white;
+            padding: 15px;
+            font-weight: bold;
+        }
+
+        .sales-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .sales-item:last-child {
+            border-bottom: none;
+        }
+
+        .sales-info {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .sales-op {
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .sales-details {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .sales-amount {
+            font-weight: bold;
+            font-size: 16px;
+            color: #4CAF50;
+            text-align: left;
+        }
+
+        .sales-actions {
+            margin-right: 10px;
+        }
+
+        /* ===== Stock Status ===== */
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .stock-card {
+            background: white;
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 3px rgba(0, 0, 0, 0.1);
+        }
+
+        .stock-card .op-label {
+            font-weight: bold;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .stock-card .stock-value {
+            font-size: 24px;
+            font-weight: bold;
+            color: #1a73e8;
+        }
+
+        .stock-card .stock-unit {
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* ===== Filter Section ===== */
+        .filter-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            flex-wrap: wrap;
+        }
+
+        .filter-bar select {
+            flex: 1;
+            min-width: 120px;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            -webkit-appearance: none;
+        }
+
+        /* ===== Empty State ===== */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #999;
+        }
+
+        .empty-state .icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        /* ===== Date Display ===== */
+        .date-display {
+            text-align: center;
+            padding: 10px;
+            background: white;
+            margin: 15px 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        /* ===== Success Message ===== */
+        .success-msg {
+            background: #e8f5e9;
+            color: #2e7d32;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: none;
+            text-align: center;
+        }
+
+        /* ===== Footer / Credits ===== */
+        .app-footer {
+            background: white;
+            padding: 20px;
+            text-align: center;
+            border-top: 1px solid #eee;
+            margin-top: auto;
+        }
+
+        .credits {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .credits .developer {
+            font-weight: bold;
+            color: #1a73e8;
+            font-size: 16px;
+        }
+
+        .credits .contact {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #666;
+            font-size: 14px;
+        }
+
+        .credits .contact a {
+            color: #4CAF50;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .credits .contact a:hover {
+            text-decoration: underline;
+        }
+
+        .credits .version {
+            color: #999;
+            font-size: 12px;
+        }
+
+        /* ===== Install Prompt ===== */
+        .install-banner {
+            background: linear-gradient(135deg, #4CAF50, #2e7d32);
+            color: white;
+            padding: 15px 20px;
+            display: none;
+            align-items: center;
+            justify-content: space-between;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+
+        .install-banner.show {
+            display: flex;
+        }
+
+        .install-banner button {
+            background: white;
+            color: #2e7d32;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            cursor: pointer;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .install-banner .close-btn {
+            background: transparent;
+            color: white;
+            font-size: 20px;
+            padding: 5px;
+        }
+
+        /* ===== Print Styles ===== */
+        @media print {
+            .nav-tabs, .btn, .sales-actions, .filter-bar, .install-banner, .app-footer {
+                display: none !important;
+            }
+            .content-section {
+                display: block !important;
+            }
+        }
+
+        /* ===== Scrollbar ===== */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1f1f1;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        /* Safe area for notched phones */
+        @supports (padding: max(0px)) {
+            .header { padding-top: max(20px, env(safe-area-inset-top)); }
+            .nav-tabs { padding-top: max(0px, env(safe-area-inset-top)); }
+            .app-footer { padding-bottom: max(20px, env(safe-area-inset-bottom)); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Install Banner -->
+    <div class="install-banner" id="installBanner">
+        <span>📱 ثبت التطبيق على جهازك للوصول السريع والعمل بدون إنترنت</span>
+        <button onclick="installApp()">تثبيت</button>
+        <button class="close-btn" onclick="dismissInstall()">×</button>
+    </div>
+
+    <!-- Header -->
+    <div class="header">
+        <h1>💳 برنامج محاسبة بطاقات التعبئة</h1>
+        <p>المغرب - نظام إدارة المبيعات والمخزون</p>
+    </div>
+
+    <!-- Date Display -->
+    <div class="date-display">
+        <span id="currentDate"></span>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-tabs">
+        <button class="nav-tab active" onclick="showSection('dashboard')">
+            <span class="tab-icon">📊</span>
+            لوحة التحكم
+        </button>
+        <button class="nav-tab" onclick="showSection('new-sale')">
+            <span class="tab-icon">🛒</span>
+            بيع جديد
+        </button>
+        <button class="nav-tab" onclick="showSection('sales')">
+            <span class="tab-icon">📝</span>
+            السجلات
+        </button>
+        <button class="nav-tab" onclick="showSection('stock')">
+            <span class="tab-icon">📦</span>
+            المخزون
+        </button>
+    </div>
+
+    <!-- Dashboard Section -->
+    <div id="dashboard" class="content-section active">
+        <div class="dashboard-grid">
+            <div class="dash-card">
+                <h3>إجمالي المبيعات اليوم</h3>
+                <div class="value" id="todaySales">0</div>
+                <div class="unit">درهم</div>
+            </div>
+            <div class="dash-card">
+                <h3>عدد المعاملات اليوم</h3>
+                <div class="value" id="todayCount">0</div>
+                <div class="unit">معاملة</div>
+            </div>
+            <div class="dash-card">
+                <h3>إجمالي الشراء</h3>
+                <div class="value" id="totalStockCost">0</div>
+                <div class="unit">درهم</div>
+            </div>
+            <div class="dash-card highlight">
+                <h3>صافي الربح</h3>
+                <div class="value" id="netProfit">0</div>
+                <div class="unit">درهم</div>
+            </div>
+        </div>
+
+        <div class="form-card">
+            <h2>📈 ملخص حسب المشغل</h2>
+            <div id="operatorSummary"></div>
+        </div>
+
+        <div class="form-card">
+            <h2>🕐 آخر 5 عمليات</h2>
+            <div id="recentSales"></div>
+        </div>
+    </div>
+
+    <!-- New Sale Section -->
+    <div id="new-sale" class="content-section">
+        <div class="success-msg" id="successMsg">
+            ✅ تم تسجيل العملية بنجاح!
+        </div>
+
+        <div class="form-card">
+            <h2>🛒 تسجيل عملية بيع</h2>
+
+            <div class="form-group">
+                <label>اختر المشغل:</label>
+                <div class="operator-grid">
+                    <div class="operator-btn" onclick="selectOperator(this, 'maroc-telecom')">
+                        <span style="font-size: 30px;">📡</span>
+                        <span class="op-name op-maroc-telecom">Maroc Telecom</span>
+                    </div>
+                    <div class="operator-btn" onclick="selectOperator(this, 'inwi')">
+                        <span style="font-size: 30px;">📶</span>
+                        <span class="op-name op-inwi">INWI</span>
+                    </div>
+                    <div class="operator-btn" onclick="selectOperator(this, 'orange')">
+                        <span style="font-size: 30px;">🍊</span>
+                        <span class="op-name op-orange">Orange</span>
+                    </div>
+                    <div class="operator-btn" onclick="selectOperator(this, 'meditel')">
+                        <span style="font-size: 30px;">🌐</span>
+                        <span class="op-name op-meditel">Meditel</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>القيمة (درهم):</label>
+                <div class="denom-grid">
+                    <button class="denom-btn" onclick="selectDenom(this, 5)">5</button>
+                    <button class="denom-btn" onclick="selectDenom(this, 10)">10</button>
+                    <button class="denom-btn" onclick="selectDenom(this, 20)">20</button>
+                    <button class="denom-btn" onclick="selectDenom(this, 30)">30</button>
+                    <button class="denom-btn" onclick="selectDenom(this, 40)">40</button>
+                    <button class="denom-btn" onclick="selectDenom(this, 50)">50</button>
+                    <button class="denom-btn" onclick="selectDenom(this, 60)">60</button>
+                    <button class="denom-btn" onclick="selectDenom(this, 100)">100</button>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>الكمية:</label>
+                <input type="number" class="form-control" id="quantity" value="1" min="1">
+            </div>
+
+            <div class="form-group">
+                <label>سعر الشراء (للبطاقة) - درهم:</label>
+                <input type="number" class="form-control" id="buyPrice" step="0.1" placeholder="مثال: 9.5">
+            </div>
+
+            <div class="form-group">
+                <label>سعر البيع (للبطاقة) - درهم:</label>
+                <input type="number" class="form-control" id="sellPrice" step="0.1" placeholder="مثال: 10">
+            </div>
+
+            <div class="form-group">
+                <label>ملاحظات (اختياري):</label>
+                <input type="text" class="form-control" id="notes" placeholder="أي ملاحظات إضافية...">
+            </div>
+
+            <div style="background: #f5f5f5; padding: 15px; border-radius: 8px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span>إجمالي البيع:</span>
+                    <strong id="previewSell">0.00 درهم</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; margin-bottom: 10px;">
+                    <span>إجمالي الشراء:</span>
+                    <strong id="previewBuy">0.00 درهم</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; padding-top: 10px; border-top: 2px solid #ddd;">
+                    <span>الربح المتوقع:</span>
+                    <strong id="previewProfit" style="color: #4CAF50;">0.00 درهم</strong>
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="recordSale()">تسجيل العملية</button>
+        </div>
+    </div>
+
+    <!-- Sales Records Section -->
+    <div id="sales" class="content-section">
+        <div class="filter-bar">
+            <select id="filterOperator" onchange="renderSales()">
+                <option value="all">جميع المشغلين</option>
+                <option value="maroc-telecom">Maroc Telecom</option>
+                <option value="inwi">INWI</option>
+                <option value="orange">Orange</option>
+                <option value="meditel">Meditel</option>
+            </select>
+            <select id="filterPeriod" onchange="renderSales()">
+                <option value="all">الكل</option>
+                <option value="today">اليوم</option>
+                <option value="week">هذا الأسبوع</option>
+                <option value="month">هذا الشهر</option>
+            </select>
+        </div>
+
+        <div class="sales-list">
+            <div class="sales-header">
+                <span>سجل العمليات</span>
+                <span id="salesTotal" style="float: left;"></span>
+            </div>
+            <div id="salesList"></div>
+        </div>
+    </div>
+
+    <!-- Stock Section -->
+    <div id="stock" class="content-section">
+        <div class="form-card">
+            <h2>📦 إضافة للمخزون</h2>
+
+            <div class="form-group">
+                <label>المشغل:</label>
+                <select class="form-control" id="stockOperator">
+                    <option value="maroc-telecom">Maroc Telecom</option>
+                    <option value="inwi">INWI</option>
+                    <option value="orange">Orange</option>
+                    <option value="meditel">Meditel</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>القيمة (درهم):</label>
+                <select class="form-control" id="stockDenom">
+                    <option value="5">5 درهم</option>
+                    <option value="10">10 درهم</option>
+                    <option value="20">20 درهم</option>
+                    <option value="30">30 درهم</option>
+                    <option value="40">40 درهم</option>
+                    <option value="50">50 درهم</option>
+                    <option value="60">60 درهم</option>
+                    <option value="100">100 درهم</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>الكمية:</label>
+                <input type="number" class="form-control" id="stockQuantity" value="10" min="1">
+            </div>
+
+            <div class="form-group">
+                <label>سعر الشراء (للبطاقة) - درهم:</label>
+                <input type="number" class="form-control" id="stockBuyPrice" step="0.1" placeholder="مثال: 9.5">
+            </div>
+
+            <button class="btn btn-success" onclick="addStock()">إضافة للمخزون</button>
+        </div>
+
+        <div class="form-card">
+            <h2>📊 حالة المخزون الحالي</h2>
+            <div class="stock-grid" id="stockGrid"></div>
+        </div>
+
+        <div class="form-card">
+            <h2>📋 سجل المخزون</h2>
+            <div id="stockHistory"></div>
+        </div>
+    </div>
+
+    <!-- Footer with Credits -->
+    <footer class="app-footer">
+        <div class="credits">
+            <div class="developer">👨‍💻 تطوير: محمد القادري</div>
+            <div class="contact">
+                <span>📞 للتواصل:</span>
+                <a href="tel:+212680898384">0680898384</a>
+				<a>adresse: Hay laarassi N°94-Nador</a>
+            </div>
+            <div class="version">الإصدار 1.0.0 | جميع الحقوق محفوظة © 2025</div>
+        </div>
+    </footer>
+
+    <script>
+        // ===== PWA Install Prompt =====
+        let deferredPrompt = null;
+        const installBanner = document.getElementById('installBanner');
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            // Show banner after 3 seconds
+            setTimeout(() => {
+                installBanner.classList.add('show');
+            }, 3000);
+        });
+
+        window.addEventListener('appinstalled', () => {
+            installBanner.classList.remove('show');
+            deferredPrompt = null;
+        });
+
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('User accepted the install prompt');
+                    }
+                    deferredPrompt = null;
+                    installBanner.classList.remove('show');
+                });
+            }
+        }
+
+        function dismissInstall() {
+            installBanner.classList.remove('show');
+            // Don't show again for 24 hours
+            localStorage.setItem('installDismissed', Date.now().toString());
+        }
+
+        // Check if previously dismissed
+        const dismissed = localStorage.getItem('installDismissed');
+        if (dismissed && (Date.now() - parseInt(dismissed)) < 24 * 60 * 60 * 1000) {
+            // Don't show banner
+        }
+
+        // ===== Register Service Worker =====
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js')
+                    .then(reg => console.log('Service Worker registered:', reg.scope))
+                    .catch(err => console.log('Service Worker registration failed:', err));
+            });
+        }
+
+        // ===== Data Store =====
+        let sales = JSON.parse(localStorage.getItem('sales') || '[]');
+        let stock = JSON.parse(localStorage.getItem('stock') || '[]');
+
+        let selectedOperator = '';
+        let selectedDenom = 0;
+
+        const operatorNames = {
+            'maroc-telecom': 'Maroc Telecom',
+            'inwi': 'INWI',
+            'orange': 'Orange',
+            'meditel': 'Meditel'
+        };
+
+        const operatorClasses = {
+            'maroc-telecom': 'op-maroc-telecom',
+            'inwi': 'op-inwi',
+            'orange': 'op-orange',
+            'meditel': 'op-meditel'
+        };
+
+        // ===== Initialize =====
+        function init() {
+            updateDate();
+            updateDashboard();
+            renderSales();
+            renderStock();
+            setInterval(updateDate, 60000);
+        }
+
+        function updateDate() {
+            const now = new Date();
+            const options = {
+                weekday: 'long',
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            };
+            document.getElementById('currentDate').textContent =
+                now.toLocaleDateString('ar-MA', options);
+        }
+
+        // ===== Navigation =====
+        function showSection(id) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+
+            document.getElementById(id).classList.add('active');
+            event.currentTarget.classList.add('active');
+
+            if (id === 'dashboard') updateDashboard();
+            if (id === 'sales') renderSales();
+            if (id === 'stock') renderStock();
+        }
+
+        // ===== Operator Selection =====
+        function selectOperator(el, op) {
+            document.querySelectorAll('.operator-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedOperator = op;
+            updatePreview();
+        }
+
+        // ===== Denomination Selection =====
+        function selectDenom(el, val) {
+            document.querySelectorAll('.denom-btn').forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected');
+            selectedDenom = val;
+            updatePreview();
+        }
+
+        // ===== Preview Calculation =====
+        document.querySelectorAll('#quantity, #buyPrice, #sellPrice').forEach(input => {
+            input.addEventListener('input', updatePreview);
+        });
+
+        function updatePreview() {
+            const qty = parseInt(document.getElementById('quantity').value) || 0;
+            const buyP = parseFloat(document.getElementById('buyPrice').value) || 0;
+            const sellP = parseFloat(document.getElementById('sellPrice').value) || 0;
+
+            document.getElementById('previewSell').textContent = (sellP * qty).toFixed(2) + ' درهم';
+            document.getElementById('previewBuy').textContent = (buyP * qty).toFixed(2) + ' درهم';
+
+            const profit = (sellP - buyP) * qty;
+            const profitEl = document.getElementById('previewProfit');
+            profitEl.textContent = profit.toFixed(2) + ' درهم';
+            profitEl.style.color = profit >= 0 ? '#4CAF50' : '#f44336';
+        }
+
+        // ===== Record Sale =====
+        function recordSale() {
+            if (!selectedOperator) {
+                alert('يرجى اختيار المشغل');
+                return;
+            }
+            if (!selectedDenom) {
+                alert('يرجى اختيار القيمة');
+                return;
+            }
+
+            const qty = parseInt(document.getElementById('quantity').value) || 0;
+            const buyP = parseFloat(document.getElementById('buyPrice').value) || 0;
+            const sellP = parseFloat(document.getElementById('sellPrice').value) || 0;
+            const notes = document.getElementById('notes').value;
+
+            if (qty <= 0) {
+                alert('يرجى إدخال كمية صحيحة');
+                return;
+            }
+
+            const sale = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                operator: selectedOperator,
+                denomination: selectedDenom,
+                quantity: qty,
+                buyPrice: buyP,
+                sellPrice: sellP,
+                totalBuy: buyP * qty,
+                totalSell: sellP * qty,
+                profit: (sellP - buyP) * qty,
+                notes: notes
+            };
+
+            sales.unshift(sale);
+            saveData();
+
+            // Show success message
+            const msg = document.getElementById('successMsg');
+            msg.style.display = 'block';
+            setTimeout(() => msg.style.display = 'none', 3000);
+
+            // Reset form
+            document.querySelectorAll('.operator-btn').forEach(b => b.classList.remove('selected'));
+            document.querySelectorAll('.denom-btn').forEach(b => b.classList.remove('selected'));
+            document.getElementById('quantity').value = 1;
+            document.getElementById('buyPrice').value = '';
+            document.getElementById('sellPrice').value = '';
+            document.getElementById('notes').value = '';
+            selectedOperator = '';
+            selectedDenom = 0;
+            updatePreview();
+        }
+
+        // ===== Add Stock =====
+        function addStock() {
+            const op = document.getElementById('stockOperator').value;
+            const denom = parseInt(document.getElementById('stockDenom').value);
+            const qty = parseInt(document.getElementById('stockQuantity').value) || 0;
+            const buyP = parseFloat(document.getElementById('stockBuyPrice').value) || 0;
+
+            if (qty <= 0) {
+                alert('يرجى إدخال كمية صحيحة');
+                return;
+            }
+
+            const stockEntry = {
+                id: Date.now(),
+                date: new Date().toISOString(),
+                operator: op,
+                denomination: denom,
+                quantity: qty,
+                buyPrice: buyP,
+                totalCost: buyP * qty
+            };
+
+            stock.unshift(stockEntry);
+            saveData();
+            renderStock();
+
+            alert('تمت إضافة المخزون بنجاح!');
+            document.getElementById('stockQuantity').value = 10;
+            document.getElementById('stockBuyPrice').value = '';
+        }
+
+        // ===== Dashboard =====
+        function updateDashboard() {
+            const today = new Date().toDateString();
+            const todaySales = sales.filter(s => new Date(s.date).toDateString() === today);
+
+            const totalSell = todaySales.reduce((sum, s) => sum + s.totalSell, 0);
+            const totalBuy = todaySales.reduce((sum, s) => sum + s.totalBuy, 0);
+            const totalProfit = todaySales.reduce((sum, s) => sum + s.profit, 0);
+
+            document.getElementById('todaySales').textContent = totalSell.toFixed(2);
+            document.getElementById('todayCount').textContent = todaySales.length;
+            document.getElementById('totalStockCost').textContent = totalBuy.toFixed(2);
+            document.getElementById('netProfit').textContent = totalProfit.toFixed(2);
+
+            // Operator summary
+            let summaryHTML = '';
+            const ops = ['maroc-telecom', 'inwi', 'orange', 'meditel'];
+            ops.forEach(op => {
+                const opSales = todaySales.filter(s => s.operator === op);
+                const opTotal = opSales.reduce((sum, s) => sum + s.totalSell, 0);
+                const opProfit = opSales.reduce((sum, s) => sum + s.profit, 0);
+
+                summaryHTML += `
+                    <div style="display: flex; justify-content: space-between;
+                        padding: 12px; border-bottom: 1px solid #eee;">
+                        <span class="${operatorClasses[op]}" style="font-weight: bold;">
+                            ${operatorNames[op]}
+                        </span>
+                        <span>${opSales.length} عملية | ${opTotal.toFixed(2)} درهم</span>
+                        <span style="color: ${opProfit >= 0 ? '#4CAF50' : '#f44336'}">
+                            ${opProfit >= 0 ? '+' : ''}${opProfit.toFixed(2)}
+                        </span>
+                    </div>
+                `;
+            });
+            document.getElementById('operatorSummary').innerHTML = summaryHTML;
+
+            // Recent sales
+            const recent = sales.slice(0, 5);
+            if (recent.length === 0) {
+                document.getElementById('recentSales').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📝</div>
+                        <p>لا توجد عمليات بعد</p>
+                    </div>
+                `;
+            } else {
+                let recentHTML = '';
+                recent.forEach(s => {
+                    const dateStr = new Date(s.date).toLocaleTimeString('ar-MA', {
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    recentHTML += `
+                        <div class="sales-item">
+                            <div class="sales-info">
+                                <div class="sales-op ${operatorClasses[s.operator]}">
+                                    ${operatorNames[s.operator]}
+                                </div>
+                                <div class="sales-details">
+                                    ${s.denomination} درهم × ${s.quantity} | ${dateStr}
+                                </div>
+                            </div>
+                            <div class="sales-amount">${s.totalSell.toFixed(2)}</div>
+                        </div>
+                    `;
+                });
+                document.getElementById('recentSales').innerHTML = recentHTML;
+            }
+        }
+
+        // ===== Render Sales =====
+        function renderSales() {
+            const filterOp = document.getElementById('filterOperator').value;
+            const filterPeriod = document.getElementById('filterPeriod').value;
+
+            let filtered = [...sales];
+
+            if (filterOp !== 'all') {
+                filtered = filtered.filter(s => s.operator === filterOp);
+            }
+
+            const now = new Date();
+            if (filterPeriod === 'today') {
+                filtered = filtered.filter(s =>
+                    new Date(s.date).toDateString() === now.toDateString());
+            } else if (filterPeriod === 'week') {
+                const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
+                filtered = filtered.filter(s => new Date(s.date) >= weekAgo);
+            } else if (filterPeriod === 'month') {
+                filtered = filtered.filter(s => {
+                    const d = new Date(s.date);
+                    return d.getMonth() === now.getMonth() &&
+                           d.getFullYear() === now.getFullYear();
+                });
+            }
+
+            const total = filtered.reduce((sum, s) => sum + s.totalSell, 0);
+            document.getElementById('salesTotal').textContent =
+                `الإجمالي: ${total.toFixed(2)} درهم`;
+
+            if (filtered.length === 0) {
+                document.getElementById('salesList').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">🔍</div>
+                        <p>لا توجد عمليات مطابقة</p>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            filtered.forEach(s => {
+                const dateStr = new Date(s.date).toLocaleDateString('ar-MA', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric'
+                });
+                const timeStr = new Date(s.date).toLocaleTimeString('ar-MA', {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                html += `
+                    <div class="sales-item">
+                        <div class="sales-info">
+                            <div class="sales-op ${operatorClasses[s.operator]}">
+                                ${operatorNames[s.operator]} - ${s.denomination} درهم
+                            </div>
+                            <div class="sales-details">
+                                ${dateStr} | ${timeStr} | الكمية: ${s.quantity}
+                                ${s.notes ? '<br>ملاحظة: ' + s.notes : ''}
+                            </div>
+                        </div>
+                        <div style="text-align: left;">
+                            <div class="sales-amount">${s.totalSell.toFixed(2)}</div>
+                            <div style="font-size: 12px; color: #666;">
+                                ربح: ${s.profit.toFixed(2)}
+                            </div>
+                        </div>
+                        <div class="sales-actions">
+                            <button class="btn btn-danger"
+                                onclick="deleteSale(${s.id})">🗑️</button>
+                        </div>
+                    </div>
+                `;
+            });
+
+            document.getElementById('salesList').innerHTML = html;
+        }
+
+        // ===== Delete Sale =====
+        function deleteSale(id) {
+            if (confirm('هل أنت متأكد من حذف هذه العملية؟')) {
+                sales = sales.filter(s => s.id !== id);
+                saveData();
+                renderSales();
+                updateDashboard();
+            }
+        }
+
+        // ===== Render Stock =====
+        function renderStock() {
+            // Calculate current stock per operator/denom
+            const stockMap = {};
+
+            stock.forEach(s => {
+                const key = `${s.operator}-${s.denomination}`;
+                if (!stockMap[key]) {
+                    stockMap[key] = {
+                        operator: s.operator,
+                        denomination: s.denomination,
+                        totalQty: 0,
+                        totalCost: 0
+                    };
+                }
+                stockMap[key].totalQty += s.quantity;
+                stockMap[key].totalCost += s.totalCost;
+            });
+
+            // Subtract sold items
+            sales.forEach(s => {
+                const key = `${s.operator}-${s.denomination}`;
+                if (stockMap[key]) {
+                    stockMap[key].totalQty -= s.quantity;
+                }
+            });
+
+            const ops = ['maroc-telecom', 'inwi', 'orange', 'meditel'];
+            const denoms = [5, 10, 20, 30, 40, 50, 60, 100];
+
+            let gridHTML = '';
+            ops.forEach(op => {
+                denoms.forEach(denom => {
+                    const key = `${op}-${denom}`;
+                    const item = stockMap[key];
+                    const qty = item ? Math.max(0, item.totalQty) : 0;
+
+                    if (qty > 0 || item) {
+                        gridHTML += `
+                            <div class="stock-card">
+                                <div class="op-label ${operatorClasses[op]}">
+                                    ${operatorNames[op]} ${denom} درهم
+                                </div>
+                                <div class="stock-value"
+                                    style="color: ${qty <= 5 ? '#f44336' : '#1a73e8'}">
+                                    ${qty}
+                                </div>
+                                <div class="stock-unit">بطاقة</div>
+                            </div>
+                        `;
+                    }
+                });
+            });
+
+            if (!gridHTML) {
+                gridHTML = `
+                    <div class="empty-state" style="grid-column: 1/-1;">
+                        <div class="icon">📦</div>
+                        <p>المخزون فارغ - قم بإضافة بطاقات جديدة</p>
+                    </div>
+                `;
+            }
+
+            document.getElementById('stockGrid').innerHTML = gridHTML;
+
+            // Stock history
+            if (stock.length === 0) {
+                document.getElementById('stockHistory').innerHTML = `
+                    <div class="empty-state">
+                        <div class="icon">📋</div>
+                        <p>لا يوجد سجل مخزون</p>
+                    </div>
+                `;
+            } else {
+                let histHTML = '';
+                stock.slice(0, 10).forEach(s => {
+                    const dateStr = new Date(s.date).toLocaleDateString('ar-MA', {
+                        day: '2-digit',
+                        month: '2-digit'
+                    });
+                    histHTML += `
+                        <div class="sales-item">
+                            <div class="sales-info">
+                                <div class="sales-op ${operatorClasses[s.operator]}">
+                                    ${operatorNames[s.operator]} - ${s.denomination} درهم
+                                </div>
+                                <div class="sales-details">${dateStr}</div>
+                            </div>
+                            <div>
+                                <div style="font-weight: bold;">+${s.quantity}</div>
+                                <div style="font-size: 12px; color: #666;">
+                                    ${s.totalCost.toFixed(2)} درهم
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                document.getElementById('stockHistory').innerHTML = histHTML;
+            }
+        }
+
+        // ===== Save Data =====
+        function saveData() {
+            localStorage.setItem('sales', JSON.stringify(sales));
+            localStorage.setItem('stock', JSON.stringify(stock));
+        }
+
+        // ===== Start =====
+        init();
+    </script>
+</body>
+</html>

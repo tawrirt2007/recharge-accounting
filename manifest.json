@@ -1,0 +1,85 @@
+{
+  "name": "برنامج محاسبة بطاقات التعبئة - المغرب",
+  "short_name": "محاسبة تعبئة",
+  "description": "برنامج متكامل لإدارة مبيعات ومخزون بطاقات التعبئة في المغرب - تطوير محمد القادري",
+  "start_url": "./morocco-recharge-accounting.html",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#f0f2f5",
+  "theme_color": "#1a73e8",
+  "scope": "./",
+  "lang": "ar",
+  "dir": "rtl",
+  "icons": [
+    {
+      "src": "icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-128.png",
+      "sizes": "128x128",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["business", "finance", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "بيع جديد",
+      "short_name": "بيع",
+      "description": "تسجيل عملية بيع جديدة",
+      "url": "./morocco-recharge-accounting.html#new-sale",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "المخزون",
+      "short_name": "مخزون",
+      "description": "عرض حالة المخزون",
+      "url": "./morocco-recharge-accounting.html#stock",
+      "icons": [{ "src": "icon-96.png", "sizes": "96x96" }]
+    }
+  ],
+  "developer": {
+    "name": "محمد القادري",
+    "url": "tel:+212680898384"
+  }
+}

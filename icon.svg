@@ -1,0 +1,67 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <!-- Background circle -->
+  <defs>
+    <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a73e8;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0d47a1;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#f0f2f5;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+
+  <!-- Main background -->
+  <circle cx="256" cy="256" r="240" fill="url(#bgGradient)" />
+
+  <!-- SIM Card / Recharge Card shape -->
+  <g transform="translate(80, 120)">
+    <!-- Card base -->
+    <rect x="0" y="0" width="352" height="272" rx="24" fill="url(#cardGradient)" stroke="#e0e0e0" stroke-width="2"/>
+
+    <!-- Top section - Operator indicator -->
+    <rect x="24" y="24" width="304" height="60" rx="12" fill="#1a73e8" opacity="0.1"/>
+    <text x="176" y="62" text-anchor="middle" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#1a73e8">📱</text>
+
+    <!-- Denomination display -->
+    <rect x="24" y="104" width="304" height="100" rx="16" fill="#1a73e8"/>
+    <text x="176" y="158" text-anchor="middle" font-family="Arial, sans-serif" font-size="48" font-weight="900" fill="white">50</text>
+    <text x="176" y="190" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" fill="rgba(255,255,255,0.9)">درهم</text>
+
+    <!-- Morocco flag indicator -->
+    <g transform="translate(24, 220)">
+      <rect x="0" y="0" width="80" height="50" rx="8" fill="#e91e63"/>
+      <rect x="0" y="0" width="80" height="16" fill="#006233"/>
+      <polygon points="40,8 48,22 32,22" fill="#e91e63"/>
+    </g>
+
+    <!-- INWI indicator -->
+    <g transform="translate(136, 220)">
+      <rect x="0" y="0" width="80" height="50" rx="8" fill="#4CAF50"/>
+      <text x="40" y="32" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">INWI</text>
+    </g>
+
+    <!-- Orange indicator -->
+    <g transform="translate(248, 220)">
+      <rect x="0" y="0" width="80" height="50" rx="8" fill="#ff6600"/>
+      <text x="40" y="32" text-anchor="middle" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white">Orange</text>
+    </g>
+
+    <!-- Bottom info bar -->
+    <rect x="24" y="276" width="304" height="36" rx="8" fill="#f5f5f5"/>
+    <text x="176" y="300" text-anchor="middle" font-family="Arial, sans-serif" font-size="14" fill="#666">المغرب</text>
+  </g>
+
+  <!-- Decorative elements - floating cards -->
+  <g opacity="0.15">
+    <g transform="translate(40, 40)">
+      <rect x="0" y="0" width="60" height="46" rx="6" fill="white" transform="rotate(-15)"/>
+    </g>
+    <g transform="translate(420, 30)">
+      <rect x="0" y="0" width="60" height="46" rx="6" fill="white" transform="rotate(10)"/>
+    </g>
+    <g transform="translate(30, 450)">
+      <rect x="0" y="0" width="60" height="46" rx="6" fill="white" transform="rotate(20)"/>
+    </g>
+  </g>
+</svg>

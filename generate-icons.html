@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>توليد أيقونات PWA - برنامج محاسبة بطاقات التعبئة</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f5f5f5; padding: 20px; direction: rtl; }
+        .container { max-width: 800px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1 { color: #1a73e8; margin-bottom: 10px; }
+        .subtitle { color: #666; margin-bottom: 30px; }
+        .icon-preview { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; margin: 20px 0; }
+        .icon-item { text-align: center; }
+        .icon-item canvas { border: 1px solid #ddd; border-radius: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .icon-item span { display: block; margin-top: 8px; font-size: 12px; color: #666; }
+        .btn { background: #1a73e8; color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; cursor: pointer; margin: 10px 5px; }
+        .btn:hover { background: #1565c0; }
+        .btn-success { background: #4CAF50; }
+        .btn-success:hover { background: #43A047; }
+        .instructions { background: #e8f5e9; padding: 20px; border-radius: 8px; margin-top: 30px; }
+        .instructions h3 { color: #2e7d32; margin-bottom: 15px; }
+        .instructions ol { padding-right: 20px; }
+        .instructions li { margin-bottom: 10px; line-height: 1.6; }
+        .credits { text-align: center; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eee; color: #666; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 توليد أيقونات PWA</h1>
+        <p class="subtitle">اضغط على "رسم الأيقونات" لتوليد جميع أحجام الأيقونات المطلوبة للتطبيق</p>
+
+        <button class="btn" onclick="generateAllIcons()">🎨 رسم جميع الأيقونات</button>
+        <button class="btn btn-success" onclick="downloadAll()">📥 تحميل جميع الأيقونات (ZIP)</button>
+
+        <div class="icon-preview" id="iconPreview"></div>
+
+        <div class="instructions">
+            <h3>📋 تعليمات تحويل التطبيق إلى APK</h3>
+            <ol>
+                <li><strong>طريقة 1 - PWA Builder (الأبسط، لا تحتاج كمبيوتر):</strong>
+                    <ul style="margin-top: 5px; padding-right: 20px;">
+                        <li>ارفع ملفات المشروع (HTML, manifest.json, sw.js, icons) إلى GitHub Pages أو Netlify أو Vercel</li>
+                        <li>اذهب إلى <a href="https://www.pwabuilder.com/" target="_blank">PWABuilder.com</a></li>
+                        <li>أدخل رابط موقعك واضغط "Start"</li>
+                        <li>اختر "Android" ثم "Generate" لتحميل ملف APK/AAB</li>
+                    </ul>
+                </li>
+                <li><strong>طريقة 2 - Bubblewrap (تتطلب Node.js):</strong>
+                    <pre style="background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 10px 0; overflow-x: auto;">
+npm i -g @bubblewrap/cli
+bubblewrap init --manifest=https://your-domain.com/manifest.json
+bubblewrap build</pre>
+                </li>
+                <li><strong>طريقة 3 - Capacitor (للمطورين):</strong>
+                    <pre style="background: #f5f5f5; padding: 10px; border-radius: 5px; margin: 10px 0; overflow-x: auto;">
+npm init @capacitor/app
+npm install @capacitor/core @capacitor/android
+npx cap add android
+npx cap sync
+npx cap open android</pre>
+                    ثم في Android Studio: Build → Build Bundle(s) / APK(s) → Build APK(s)
+                </li>
+                <li><strong>طريقة 4 - WebViewGold (مدفوع، سهل):</strong> اشترِ قالب WebViewGold لـ Android، ضع رابط موقعك، وصدّر APK مباشرة.
+                </li>
+            </ol>
+            <p><strong>ملاحظة مهمة:</strong> لتعمل ميزات PWA الكاملة (التثبيت، العمل أوفلاين)، يجب تشغيل الموقع عبر HTTPS. GitHub Pages و Netlify و Vercel توفر HTTPS مجاناً.</p>
+        </div>
+
+        <div class="credits">
+            <p>👨‍💻 تطوير: <strong>محمد القادري</strong></p>
+            <p>📞 للتواصل: <a href="tel:+212680898384">06 80 89 83 84</a></p>
+        </div>
+    </div>
+
+    <script>
+        const iconSizes = [72, 96, 128, 144, 152, 192, 384, 512];
+        const generatedIcons = {};
+
+        // Draw the icon on canvas
+        function drawIcon(ctx, size) {
+            const cx = size / 2;
+            const cy = size / 2;
+            const r = size * 0.47;
+
+            // Background gradient
+            const bgGrad = ctx.createLinearGradient(0, 0, size, size);
+            bgGrad.addColorStop(0, '#1a73e8');
+            bgGrad.addColorStop(1, '#0d47a1');
+            ctx.fillStyle = bgGrad;
+            ctx.beginPath();
+            ctx.arc(cx, cy, r, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Card shape
+            const cardW = size * 0.68;
+            const cardH = size * 0.53;
+            const cardX = (size - cardW) / 2;
+            const cardY = (size - cardH) / 2;
+            const cardR = size * 0.047;
+
+            // Card background
+            const cardGrad = ctx.createLinearGradient(cardX, cardY, cardX + cardW, cardY + cardH);
+            cardGrad.addColorStop(0, '#ffffff');
+            cardGrad.addColorStop(1, '#f0f2f5');
+            ctx.fillStyle = cardGrad;
+            ctx.strokeStyle = '#e0e0e0';
+            ctx.lineWidth = size * 0.004;
+            roundRect(ctx, cardX, cardY, cardW, cardH, cardR, true, true);
+
+            // Top section
+            const topY = cardY + size * 0.047;
+            const topH = size * 0.117;
+            ctx.fillStyle = 'rgba(26, 115, 232, 0.1)';
+            roundRect(ctx, cardX + size * 0.047, topY, cardW - size * 0.094, topH, size * 0.023, true, false);
+
+            // Phone emoji placeholder
+            ctx.font = `bold ${size * 0.047}px Arial`;
+            ctx.fillStyle = '#1a73e8';
+            ctx.textAlign = 'center';
+            ctx.fillText('📱', cx, topY + topH * 0.7);
+
+            // Denomination box
+            const denomY = topY + topH + size * 0.023;
+            const denomH = size * 0.195;
+            ctx.fillStyle = '#1a73e8';
+            roundRect(ctx, cardX + size * 0.047, denomY, cardW - size * 0.094, denomH, size * 0.031, true, false);
+
+            // Amount text
+            ctx.font = `900 ${size * 0.094}px Arial`;
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText('50', cx, denomY + denomH * 0.6);
+            ctx.font = `${size * 0.035}px Arial`;
+            ctx.fillStyle = 'rgba(255,255,255,0.9)';
+            ctx.fillText('درهم', cx, denomY + denomH * 0.9);
+
+            // Operator indicators
+            const opY = denomY + denomH + size * 0.023;
+            const opH = size * 0.098;
+            const opW = (cardW - size * 0.141) / 3;
+            const opX = cardX + size * 0.047;
+
+            // Maroc Telecom
+            ctx.fillStyle = '#e91e63';
+            roundRect(ctx, opX, opY, opW, opH, size * 0.016, true, false);
+            // Flag
+            ctx.fillStyle = '#006233';
+            ctx.fillRect(opX, opY, opW, opH * 0.33);
+            ctx.fillStyle = '#e91e63';
+            const fx = opX + opW / 2;
+            const fy = opY + opH * 0.16;
+            ctx.beginPath();
+            ctx.moveTo(fx, fy - size * 0.016);
+            ctx.lineTo(fx + size * 0.016, fy + size * 0.016);
+            ctx.lineTo(fx - size * 0.016, fy + size * 0.016);
+            ctx.closePath();
+            ctx.fill();
+
+            // INWI
+            ctx.fillStyle = '#4CAF50';
+            roundRect(ctx, opX + opW + size * 0.047, opY, opW, opH, size * 0.016, true, false);
+            ctx.font = `bold ${size * 0.035}px Arial`;
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.fillText('INWI', opX + opW * 1.5 + size * 0.047, opY + opH * 0.65);
+
+            // Orange
+            ctx.fillStyle = '#ff6600';
+            roundRect(ctx, opX + 2 * (opW + size * 0.047), opY, opW, opH, size * 0.016, true, false);
+            ctx.font = `bold ${size * 0.035}px Arial`;
+            ctx.fillStyle = 'white';
+            ctx.fillText('Orange', opX + opW * 2.5 + size * 0.094, opY + opH * 0.65);
+
+            // Bottom bar
+            const barY = opY + opH + size * 0.023;
+            ctx.fillStyle = '#f5f5f5';
+            roundRect(ctx, cardX + size * 0.047, barY, cardW - size * 0.094, size * 0.07, size * 0.016, true, false);
+            ctx.font = `${size * 0.027}px Arial`;
+            ctx.fillStyle = '#666';
+            ctx.textAlign = 'center';
+            ctx.fillText('المغرب', cx, barY + size * 0.047);
+        }
+
+        function roundRect(ctx, x, y, w, h, r, fill, stroke) {
+            if (w < 2 * r) r = w / 2;
+            if (h < 2 * r) r = h / 2;
+            ctx.beginPath();
+            ctx.moveTo(x + r, y);
+            ctx.arcTo(x + w, y, x + w, y + h, r);
+            ctx.arcTo(x + w, y + h, x, y + h, r);
+            ctx.arcTo(x, y + h, x, y, r);
+            ctx.arcTo(x, y, x + w, y, r);
+            ctx.closePath();
+            if (fill) ctx.fill();
+            if (stroke) ctx.stroke();
+        }
+
+        function generateAllIcons() {
+            const preview = document.getElementById('iconPreview');
+            preview.innerHTML = '';
+
+            iconSizes.forEach(size => {
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+
+                drawIcon(ctx, size);
+
+                generatedIcons[size] = canvas.toDataURL('image/png');
+
+                const div = document.createElement('div');
+                div.className = 'icon-item';
+                div.innerHTML = `<span>${size}×${size}</span>`;
+                div.insertBefore(canvas, div.firstChild);
+                preview.appendChild(div);
+            });
+
+            alert('تم توليد جميع الأيقونات! اضغط "تحميل جميع الأيقونات" لحفظها.');
+        }
+
+        function downloadAll() {
+            if (Object.keys(generatedIcons).length === 0) {
+                alert('يرجى توليد الأيقونات أولاً!');
+                return;
+            }
+
+            // Create individual download links
+            iconSizes.forEach(size => {
+                const link = document.createElement('a');
+                link.href = generatedIcons[size];
+                link.download = `icon-${size}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            });
+
+            // Also download manifest
+            fetch('manifest.json')
+                .then(r => r.text())
+                .then(text => {
+                    const blob = new Blob([text], { type: 'application/json' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'manifest.json';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+
+            // Download sw.js
+            fetch('sw.js')
+                .then(r => r.text())
+                .then(text => {
+                    const blob = new Blob([text], { type: 'application/javascript' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'sw.js';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+
+            // Download main HTML
+            fetch('morocco-recharge-accounting.html')
+                .then(r => r.text())
+                .then(text => {
+                    const blob = new Blob([text], { type: 'text/html' });
+                    const link = document.createElement('a');
+                    link.href = URL.createObjectURL(blob);
+                    link.download = 'index.html';
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                });
+        }
+
+        // Auto-generate on load
+        window.addEventListener('load', generateAllIcons);
+    </script>
+</body>
+</html>
